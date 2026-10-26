@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "CatGenie (Petnovations)",
+        "description": "Enter the signing key extracted from the CatGenie app (the 32-character key or the 84-character secret) and a refresh token captured from the app. See the integration README for how to obtain these.",
+        "data": {
+          "hmac_key": "Signing key or 84-char secret",
+          "refresh_token": "Refresh token"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate CatGenie",
+        "description": "The stored credentials stopped working. Paste a fresh refresh token (and the signing key if it changed).",
+        "data": {
+          "hmac_key": "Signing key or 84-char secret",
+          "refresh_token": "Refresh token"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Authentication failed. Check the signing key and refresh token.",
+      "cannot_connect": "Could not reach the CatGenie cloud.",
+      "unknown": "Unexpected error. Check the Home Assistant logs."
+    },
+    "abort": {
+      "reauth_successful": "Re-authentication was successful."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "CatGenie options",
+        "data": {
+          "scan_interval": "Poll interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "cleaning": { "name": "Cleaning cycle" },
+      "problem": { "name": "Problem" },
+      "online": { "name": "Online" }
+    }
+  }
+}

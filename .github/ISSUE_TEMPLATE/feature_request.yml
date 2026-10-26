@@ -1,0 +1,16 @@
+name: Feature request
+description: Suggest an entity, capability, or improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The use case or automation you want to build.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What entity, service, or behaviour would help? Note if it needs a write API (this integration is monitoring-only today).
