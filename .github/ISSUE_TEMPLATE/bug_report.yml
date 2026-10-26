@@ -1,0 +1,42 @@
+name: Bug report
+description: Something in the integration is not working
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Never paste your signing key, secret, or tokens here — they are account credentials.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Home Assistant logs for `custom_components.petnovations`. Redact any credentials.
+      render: shell
+  - type: input
+    id: ha-version
+    attributes:
+      label: Home Assistant version
+    validations:
+      required: true
+  - type: input
+    id: integration-version
+    attributes:
+      label: Integration version
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmations
+      options:
+        - label: I removed all credentials from the text above.
+          required: true
+        - label: tools/verify_catgenie.py was run and I included its (redacted) outcome where relevant.
+          required: false
