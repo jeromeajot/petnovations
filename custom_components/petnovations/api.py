@@ -13,6 +13,7 @@ from .const import (
     DEVICES_PATH,
     REFRESH_SIGN_PATH,
     REFRESH_URL_PATH,
+    USER_AGENT,
 )
 from .signing import Signer, resolve_key
 from .tokenutil import find_access_token, find_refresh_token
@@ -76,6 +77,7 @@ class PetnovationsAPI:
                 "Content-Type": "application/json",
                 "Accept": "application/json, text/plain, */*",
                 "Accept-Language": "en-US,en;q=0.9",
+                "User-Agent": USER_AGENT,
                 "Authorization": f"Bearer {self._access_token}",
             }
         )
@@ -121,6 +123,7 @@ class PetnovationsAPI:
                 "Content-Type": "application/json",
                 "Accept": "application/json, text/plain, */*",
                 "Accept-Language": "en-US,en;q=0.9",
+                "User-Agent": USER_AGENT,
             }
         )
         url = f"{BASE_URL}/{REFRESH_URL_PATH}"

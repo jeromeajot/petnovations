@@ -42,6 +42,10 @@ DEVICES_PARAMS = {"useFleetIndexAndGetRealConnectivity": "true"}
 REFRESH_URL_PATH = "facade/v1/mobile-user/refreshToken/v2"
 REFRESH_SIGN_PATH = "mobile-user/refreshToken/v2"
 
+# Identify as the official CatGenie app rather than a generic HTTP client, to
+# match the app's requests. Static app identifier, not a per-user secret.
+USER_AGENT = "CatGenie/587 CFNetwork/3896.100.1.1.1 Darwin/27.0.0"
+
 
 def derive_key(secret: str) -> str:
     """Production derivation: 'Yt' + secret[56:84] + 'x3'."""
@@ -52,7 +56,9 @@ def aes_b64(plaintext: bytes) -> str:
     pad = 16 - (len(plaintext) % 16)
     padded = plaintext + bytes([pad]) * pad
     out = subprocess.run(
-        ["openssl", "enc", "-aes-256-cbc", "-K", AES_KEY.hex(), "-iv", AES_IV.hex(), "-nosalt"],
+        # -nopad: we PKCS7-pad above, so openssl must not add a second layer.
+        ["openssl", "enc", "-aes-256-cbc", "-K", AES_KEY.hex(), "-iv", AES_IV.hex(),
+         "-nosalt", "-nopad"],
         input=padded, capture_output=True, check=True,
     )
     return base64.b64encode(out.stdout).decode()
@@ -107,6 +113,7 @@ def refresh(key: str, refresh_token: str) -> tuple[str | None, str]:
         "Content-Type": "application/json",
         "Accept": "application/json, text/plain, */*",
         "Accept-Language": "en-US,en;q=0.9",
+        "User-Agent": USER_AGENT,
     })
     status, text = http("POST", f"{BASE_URL}/{REFRESH_URL_PATH}", headers, body)
     if status != 200:
@@ -137,6 +144,7 @@ def get_devices(key: str, token: str):
         "Content-Type": "application/json",
         "Accept": "application/json, text/plain, */*",
         "Accept-Language": "en-US,en;q=0.9",
+        "User-Agent": USER_AGENT,
         "Authorization": f"Bearer {token}",
     })
     return http("GET", url, headers, None)

@@ -4,6 +4,11 @@ DOMAIN = "petnovations"
 
 BASE_URL = "https://iot.petnovations.com"
 
+# Identify as the official CatGenie app rather than a generic HTTP client, to
+# match the app's requests. This is a static app identifier captured from real
+# traffic, not a per-user secret.
+USER_AGENT = "CatGenie/587 CFNetwork/3896.100.1.1.1 Darwin/27.0.0"
+
 # Config entry keys
 CONF_HMAC_KEY = "hmac_key"  # the 32-char signing key, OR the 84-char secret
 CONF_REFRESH_TOKEN = "refresh_token"

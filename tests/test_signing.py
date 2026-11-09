@@ -96,6 +96,56 @@ def test_enc_dec_roundtrips_to_timestamp(monkeypatch):
     assert "Z" in rand
 
 
+def test_aes_encrypt_adds_exactly_one_pkcs7_block():
+    """Guard against double-padding: a 22-byte plaintext must yield 32 bytes of
+    ciphertext (one PKCS7 pad block), never 48. A second pad layer leaves the
+    first layer's bytes as data after decrypt, which the refresh endpoint — the
+    one endpoint that actually decrypts x-pm-en-dec — rejects.
+    """
+    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
+    plaintext = b"1700000000000-ABCDEFGZ"  # 22 bytes, same shape as the real one
+    assert len(plaintext) == 22
+
+    ct = signing._aes_encrypt(plaintext)
+    assert len(ct) == 32  # 22 -> 32 (single 10-byte pad); double-pad would be 48
+    assert len(base64.b64encode(ct)) == 44  # the app emits 44, not 64
+
+    dec = Cipher(algorithms.AES(signing._AES_KEY), modes.CBC(signing._AES_IV)).decryptor()
+    padded = dec.update(ct) + dec.finalize()
+    assert padded[: -padded[-1]] == plaintext  # exact round-trip, no trailing \n
+
+
+def test_aes_encrypt_openssl_fallback_matches_library(monkeypatch):
+    """The openssl fallback (used by the standalone verifier on a bare Python)
+    must agree byte-for-byte with the library backends. This is the path that
+    carried the -nopad bug, so pin it explicitly.
+    """
+    import builtins
+    import shutil
+
+    import pytest
+
+    if not shutil.which("openssl"):
+        pytest.skip("openssl CLI not available")
+
+    plaintext = b"1700000000000-ABCDEFGZ"
+    reference = signing._aes_encrypt(plaintext)  # library backend
+
+    real_import = builtins.__import__
+
+    def without_crypto(name, *args, **kwargs):
+        if name.startswith("Crypto") or name.startswith("cryptography"):
+            raise ImportError(name)
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", without_crypto)
+
+    via_openssl = signing._aes_encrypt(plaintext)
+    assert via_openssl == reference
+    assert len(via_openssl) == 32
+
+
 def test_signer_requires_key():
     import pytest
 

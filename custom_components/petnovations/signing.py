@@ -111,6 +111,8 @@ def _aes_encrypt(plaintext: bytes) -> bytes:
             "-iv",
             _AES_IV.hex(),
             "-nosalt",
+            # We PKCS7-pad above; -nopad stops openssl adding a second layer.
+            "-nopad",
         ],
         input=padded,
         capture_output=True,
