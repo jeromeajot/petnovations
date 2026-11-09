@@ -186,7 +186,8 @@ def main() -> int:
     key = args.key.strip() or (derive_key(args.secret.strip()) if args.secret.strip() else "")
     if not key:
         print("ERROR: provide --key or --secret.", file=sys.stderr); return 2
-    print(f"Signing key: {key}  (len {len(key)})")
+    # Never print the key itself — it can sign requests. Confirm it loaded only.
+    print(f"Signing key loaded (len {len(key)}).")
 
     token = args.token.strip()
     if not token:
