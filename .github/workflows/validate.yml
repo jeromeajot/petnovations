@@ -24,3 +24,7 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
+          # Upstream (PrimeAutomation/petnovations) declares no license, so this
+          # fork cannot add one; the stance is documented in NOTICE.md. Every
+          # other HACS check stays enforced.
+          ignore: license
